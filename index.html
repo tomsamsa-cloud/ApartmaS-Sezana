@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karst Nest Apartment</title>
+    <meta name="theme-color" content="#1F1A0E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        /* Colour palette: "indigo" = gold, "mint" = light gold, "night" = deep warm brown, "canvas" = warm white */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: {
+                            50: '#FBF5E3', 100: '#F3E7C4', 200: '#E6D3A1', 300: '#D6BC78',
+                            400: '#C9A24A', 500: '#9A7314', DEFAULT: '#9A7314',
+                            600: '#7E5E0F', 700: '#634909', 800: '#4A3606'
+                        },
+                        mint: {
+                            50: '#FBF5E3', 100: '#F6EBC9', 200: '#F0DFA8', 300: '#E6C877',
+                            DEFAULT: '#E6C877', 400: '#D9B65A', 500: '#C9A24A',
+                            600: '#A67C1A', 700: '#86620F', 800: '#6A4D0B'
+                        },
+                        night: { DEFAULT: '#1F1A0E', 900: '#15110A', 800: '#2A2312', 700: '#38301A' },
+                        canvas: '#FAF6EC',
+                        muted: '#6B604A'
+                    },
+                    fontFamily: {
+                        sans: ['Figtree', 'system-ui', 'sans-serif'],
+                        display: ['"Bricolage Grotesque"', 'Figtree', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --night: #1F1A0E; --night-900: #15110A; --indigo: #C9A24A; --gold-d: #9A7314; --mint: #E6C877;
+            --paper: #FAF6EC; --line: #E8DFC6; --muted: #6B604A;
+            --ease-out: cubic-bezier(.16, 1, .3, 1);
+            --shadow-sm: 0 1px 2px rgba(31,26,14,.06), 0 1px 1px rgba(31,26,14,.04);
+            --shadow-md: 0 1px 2px rgba(31,26,14,.05), 0 8px 24px -8px rgba(31,26,14,.14);
+            --shadow-lg: 0 2px 4px rgba(31,26,14,.05), 0 24px 48px -16px rgba(31,26,14,.24);
+        }
+        html { scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+        .font-display { font-variation-settings: "opsz" 96; letter-spacing: -0.035em; }
+        h1, h2, h3 { text-wrap: balance; }
+        ::selection { background: var(--mint); color: var(--night); }
+        :focus-visible { outline: 3px solid var(--gold-d); outline-offset: 3px; border-radius: 8px; }
+        .on-dark :focus-visible, .on-dark:focus-visible { outline-color: var(--mint); }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: pageIn .5s var(--ease-out) both; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+        .site-header { background: rgba(31,26,14,.82); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); }
+        .nav-btn { position: relative; }
+        .nav-btn[aria-current="page"] { color: #fff; }
+        .nav-btn[aria-current="page"]::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 2px; background: var(--mint); border-radius: 2px; }
+        .foot-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,.14);
+            font-size: .875rem; font-weight: 500; color: rgba(255,255,255,.72); transition: color .2s, background-color .2s, border-color .2s; }
+        .foot-btn:hover { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.28); }
+        .foot-btn[aria-current="page"] { color: #1F1A0E; background: var(--mint); border-color: var(--mint); }
+
+        .hero-photo { background: url('apartment-living-room.jpg') center 40% / cover no-repeat, var(--night-900); }
+        .hero-shade { background:
+            linear-gradient(90deg, rgba(21,17,10,.94) 0%, rgba(21,17,10,.78) 45%, rgba(21,17,10,.25) 100%),
+            linear-gradient(0deg, rgba(21,17,10,.9) 0%, rgba(21,17,10,0) 40%); }
+        .hero-numeral { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; line-height: .8; font-size: clamp(220px, 34vw, 520px);
+            letter-spacing: -.02em; color: rgba(230,200,119,.07); -webkit-text-stroke: 2px rgba(230,200,119,.8); }
+
+        .card { background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-sm); }
+        .rule { height: 1px; background: var(--line); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 48px; padding: 0 1.4rem; border-radius: 999px; font-weight: 600;
+            transition: transform .2s var(--ease-out), background-color .2s, box-shadow .2s, color .2s; cursor: pointer; }
+        .btn:active { transform: scale(.97); }
+        .btn-mint { background: var(--mint); color: var(--night); box-shadow: 0 8px 24px -10px rgba(230,200,119,.6); }
+        .btn-mint:hover { background: #EED38F; }
+        .btn-indigo { background: var(--indigo); color: var(--night); box-shadow: 0 8px 24px -10px rgba(154,115,20,.5); }
+        .btn-indigo:hover { background: #B8903A; }
+        .btn-ghost-dark { color: #fff; border: 1px solid rgba(255,255,255,.28); }
+        .btn-ghost-dark:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); }
+        .btn-ghost { color: var(--night); border: 1px solid var(--line); background: #fff; }
+        .btn-ghost:hover { border-color: #E6D3A1; background: #FBF5E3; }
+
+        .gallery-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        @media (min-width: 640px) { .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) {
+            .gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .gallery-grid .feature { grid-column: span 2; grid-row: span 2; }
+            .gallery-grid .feature .shot { aspect-ratio: auto; height: 100%; min-height: 420px; }
+        }
+        .shot { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 16px; background: #F3E7C4; position: relative; }
+        .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out); }
+        .gallery-item button:hover img, .gallery-item button:focus-visible img { transform: scale(1.04); }
+        .shot .zoom-hint { position: absolute; right: 12px; bottom: 12px; width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center;
+            background: rgba(255,255,255,.92); color: var(--night); opacity: 0; transform: translateY(6px); transition: all .3s var(--ease-out); }
+        .gallery-item button:hover .zoom-hint, .gallery-item button:focus-visible .zoom-hint { opacity: 1; transform: none; }
+
+        #lightbox { display: none; }
+        #lightbox.open { display: flex; animation: fadeIn .25s ease both; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .field label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: .4rem; }
+        .field input, .field select, .field textarea {
+            width: 100%; min-height: 48px; padding: .7rem 1rem; border-radius: 14px; border: 2px solid var(--line); background: #fff;
+            font: inherit; color: var(--night); transition: border-color .2s, box-shadow .2s; }
+        .field textarea { min-height: 110px; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 4px rgba(201,162,74,.22); }
+        .tabular { font-variant-numeric: tabular-nums; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body class="bg-canvas text-night font-sans flex flex-col min-h-screen">
+
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-full focus:bg-mint-300 focus:text-night font-semibold">Skip to content</a>
+
+    <!-- HEADER -->
+    <header class="site-header on-dark sticky top-0 z-50 border-b border-white/10 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-[72px]">
+                <button type="button" class="flex items-center gap-3 text-left" onclick="navigateTo('welcome')" aria-label="Go to welcome page">
+                    <span class="w-10 h-10 rounded-[12px] bg-mint-300 text-night grid place-items-center shrink-0"><i class="fas fa-house-chimney" aria-hidden="true"></i></span>
+                    <span>
+                        <span class="block font-display font-bold text-[17px] leading-tight tracking-tight">Karst Nest</span>
+                        <span class="hidden sm:block text-xs text-white/55">Apartment in Sežana</span>
+                    </span>
+                </button>
+
+                <nav class="hidden md:flex items-center gap-1" aria-label="Main">
+                    <button onclick="navigateTo('welcome')" id="nav-welcome" class="nav-btn px-4 py-2.5 rounded-full text-sm font-medium text-white/70 hover:text-white transition-colors" aria-current="page">Welcome</button>
+                    <button onclick="navigateTo('apartment')" id="nav-apartment" class="nav-btn px-4 py-2.5 rounded-full text-sm font-medium text-white/70 hover:text-white transition-colors">The Apartment</button>
+                    <button onclick="navigateTo('booking')" id="nav-booking" class="nav-btn px-4 py-2.5 rounded-full text-sm font-medium text-white/70 hover:text-white transition-colors">Book Now</button>
+                    <button onclick="navigateTo('location')" id="nav-location" class="nav-btn px-4 py-2.5 rounded-full text-sm font-medium text-white/70 hover:text-white transition-colors">Location</button>
+                    <button onclick="navigateTo('host')" id="nav-host" class="nav-btn px-4 py-2.5 rounded-full text-sm font-medium text-white/70 hover:text-white transition-colors">Your Host</button>
+                </nav>
+
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-11 h-11 grid place-items-center rounded-full text-white/80 hover:bg-white/10" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="fas fa-bars text-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="navigateTo('welcome'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-white/85 hover:bg-white/10">Welcome</button>
+            <button onclick="navigateTo('apartment'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-white/85 hover:bg-white/10">The Apartment</button>
+            <button onclick="navigateTo('booking'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-white/85 hover:bg-white/10">Book Now</button>
+            <button onclick="navigateTo('location'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-white/85 hover:bg-white/10">Location</button>
+            <button onclick="navigateTo('host'); toggleMobileMenu()" class="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-white/85 hover:bg-white/10">Your Host</button>
+        </div>
+    </header>
+
+    <main id="main" class="flex-grow" tabindex="-1">
+
+        <!-- PAGE 1: WELCOME (INTRO) -->
+        <section id="page-welcome" class="page-section active">
+            <div class="on-dark relative bg-night text-white overflow-hidden">
+                <div class="hero-photo absolute inset-0" role="img" aria-label="Living room of the apartment"></div>
+                <div class="hero-shade absolute inset-0"></div>
+                <div class="hero-numeral absolute -right-6 -bottom-10 select-none pointer-events-none hidden md:block" aria-hidden="true">4★</div>
+
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 sm:pt-32 sm:pb-28 lg:pt-40 lg:pb-36">
+                    <p class="inline-flex items-center gap-2 text-sm font-medium text-mint-300 mb-6">
+                        <span class="w-2 h-2 rounded-full bg-mint-300"></span>
+                        Welcome to Sežana, Slovenia
+                    </p>
+                    <h1 class="font-display font-bold text-4xl sm:text-6xl lg:text-7xl leading-[1.02] max-w-4xl mb-7">
+                        Your calm, bright home in the heart of the Karst
+                    </h1>
+                    <p class="text-lg sm:text-xl text-white/75 max-w-2xl mb-10 leading-relaxed">
+                        A cosy apartment for up to 4 guests, a short walk from the train station, the botanical garden and the town centre.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="navigateTo('booking')" class="btn btn-mint">Check availability</button>
+                        <button onclick="navigateTo('apartment')" class="btn btn-ghost-dark">See the apartment</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+                <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+                    <div class="lg:col-span-5">
+                        <h2 class="font-display font-bold text-4xl sm:text-5xl leading-[1.05]">Why stay with us</h2>
+                    </div>
+                    <div class="lg:col-span-7 lg:pt-2">
+                        <p class="text-xl sm:text-2xl leading-relaxed text-night/90 mb-6">
+                            Everything you need for a relaxed stay, whether you are visiting for a weekend or working remotely for a month.
+                        </p>
+                        <p class="text-muted text-lg leading-relaxed mb-10 max-w-2xl">
+                            [EDIT: Write two or three sentences about what makes your apartment special.]
+                        </p>
+                        <div class="rule mb-8"></div>
+                        <div class="grid sm:grid-cols-3 gap-6">
+                            <button onclick="navigateTo('apartment')" class="group text-left">
+                                <span class="block text-sm text-muted mb-1">12 photos</span>
+                                <span class="font-display font-semibold text-lg group-hover:text-indigo-500 transition-colors">Look inside <i class="fas fa-arrow-right text-sm ml-1 transition-transform group-hover:translate-x-1" aria-hidden="true"></i></span>
+                            </button>
+                            <button onclick="navigateTo('location')" class="group text-left">
+                                <span class="block text-sm text-muted mb-1">Google Maps</span>
+                                <span class="font-display font-semibold text-lg group-hover:text-indigo-500 transition-colors">Find us <i class="fas fa-arrow-right text-sm ml-1 transition-transform group-hover:translate-x-1" aria-hidden="true"></i></span>
+                            </button>
+                            <button onclick="navigateTo('booking')" class="group text-left">
+                                <span class="block text-sm text-muted mb-1">From €85 / night</span>
+                                <span class="font-display font-semibold text-lg group-hover:text-indigo-500 transition-colors">Book your dates <i class="fas fa-arrow-right text-sm ml-1 transition-transform group-hover:translate-x-1" aria-hidden="true"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: THE APARTMENT -->
+        <section id="page-apartment" class="page-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
+
+                <header class="grid lg:grid-cols-12 gap-6 lg:gap-16 items-end mb-12 sm:mb-16">
+                    <div class="lg:col-span-7">
+                        <h2 class="font-display font-bold text-4xl sm:text-6xl leading-[1.02]">The Apartment</h2>
+                    </div>
+                    <p class="lg:col-span-5 text-muted text-lg leading-relaxed">62 m² on the second floor with a balcony, two bedrooms and a fully equipped kitchen.</p>
+                </header>
+
+                <!-- Quick facts -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+                    <div class="card p-6"><i class="fas fa-user-group text-indigo-500 text-xl mb-4" aria-hidden="true"></i><p class="font-display font-semibold text-2xl">4 guests</p><p class="text-sm text-muted">Maximum occupancy</p></div>
+                    <div class="card p-6"><i class="fas fa-bed text-indigo-500 text-xl mb-4" aria-hidden="true"></i><p class="font-display font-semibold text-2xl">2 bedrooms</p><p class="text-sm text-muted">3 beds in total</p></div>
+                    <div class="card p-6"><i class="fas fa-bath text-indigo-500 text-xl mb-4" aria-hidden="true"></i><p class="font-display font-semibold text-2xl">1 bathroom</p><p class="text-sm text-muted">Walk-in shower</p></div>
+                    <div class="card p-6"><i class="fas fa-ruler-combined text-indigo-500 text-xl mb-4" aria-hidden="true"></i><p class="font-display font-semibold text-2xl">62 m²</p><p class="text-sm text-muted">Second floor, with lift</p></div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="gallery-grid" id="gallery-grid">
+                    <figure class="gallery-item feature">
+                        <button type="button" class="block w-full h-full text-left" onclick="openLightbox(0)">
+                            <div class="shot"><img src="apartment-living-room.jpg" alt="Living room" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/900x700/1F1A0E/ffffff?text=Living+room'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-4"><h3 class="font-display font-semibold text-xl mb-1">Living Room</h3><p class="text-sm text-muted">A bright space with a comfortable sofa and a smart TV.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(1)">
+                            <div class="shot"><img src="apartment-bedroom-1.jpg" alt="First bedroom" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Bedroom+1'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Main Bedroom</h3><p class="text-sm text-muted">Double bed with fresh linen and blackout curtains.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(2)">
+                            <div class="shot"><img src="apartment-bedroom-2.jpg" alt="Second bedroom" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Bedroom+2'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Second Bedroom</h3><p class="text-sm text-muted">Two single beds, ideal for friends or children.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(3)">
+                            <div class="shot"><img src="apartment-kitchen.jpg" alt="Kitchen" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Kitchen'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Kitchen</h3><p class="text-sm text-muted">Fully equipped, with oven, dishwasher and coffee machine.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(4)">
+                            <div class="shot"><img src="apartment-dining.jpg" alt="Dining area" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Dining'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Dining Area</h3><p class="text-sm text-muted">A table for four, perfect for shared meals.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(5)">
+                            <div class="shot"><img src="apartment-bathroom.jpg" alt="Bathroom" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Bathroom'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Bathroom</h3><p class="text-sm text-muted">Modern walk-in shower, towels and toiletries included.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(6)">
+                            <div class="shot"><img src="apartment-balcony.jpg" alt="Balcony" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Balcony'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Balcony</h3><p class="text-sm text-muted">Morning coffee or an evening drink with a quiet view.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(7)">
+                            <div class="shot"><img src="apartment-workspace.jpg" alt="Workspace" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Workspace'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Workspace</h3><p class="text-sm text-muted">A desk with fast Wi-Fi for remote work.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(8)">
+                            <div class="shot"><img src="apartment-entrance.jpg" alt="Entrance hall" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Entrance'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Entrance Hall</h3><p class="text-sm text-muted">Self check-in with a key box.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(9)">
+                            <div class="shot"><img src="apartment-view.jpg" alt="View from the window" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=View'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">The View</h3><p class="text-sm text-muted">Rooftops and green hills of the Karst.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(10)">
+                            <div class="shot"><img src="apartment-parking.jpg" alt="Parking" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Parking'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">Free Parking</h3><p class="text-sm text-muted">One private parking space right by the building.</p></figcaption>
+                    </figure>
+                    <figure class="gallery-item">
+                        <button type="button" class="block w-full text-left" onclick="openLightbox(11)">
+                            <div class="shot"><img src="apartment-building.jpg" alt="Building exterior" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x400/1F1A0E/ffffff?text=Building'"><span class="zoom-hint" aria-hidden="true"><i class="fas fa-expand"></i></span></div>
+                        </button>
+                        <figcaption class="pt-3"><h3 class="font-display font-semibold mb-1">The Building</h3><p class="text-sm text-muted">A quiet residential street close to everything.</p></figcaption>
+                    </figure>
+                </div>
+
+                <!-- Amenities -->
+                <div class="card p-8 sm:p-10 mt-14" style="box-shadow: var(--shadow-md)">
+                    <h3 class="font-display font-semibold text-2xl mb-8">What is included</h3>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
+                        <p class="flex items-center gap-3"><i class="fas fa-wifi text-mint-600 w-5" aria-hidden="true"></i>Fast Wi-Fi</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-snowflake text-mint-600 w-5" aria-hidden="true"></i>Air conditioning</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-kitchen-set text-mint-600 w-5" aria-hidden="true"></i>Full kitchen</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-jug-detergent text-mint-600 w-5" aria-hidden="true"></i>Washing machine</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-tv text-mint-600 w-5" aria-hidden="true"></i>Smart TV</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-square-parking text-mint-600 w-5" aria-hidden="true"></i>Free parking</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-bed text-mint-600 w-5" aria-hidden="true"></i>Linen and towels</p>
+                        <p class="flex items-center gap-3"><i class="fas fa-baby text-mint-600 w-5" aria-hidden="true"></i>Baby cot on request</p>
+                    </div>
+                </div>
+
+                <div class="mt-10 flex justify-center">
+                    <button onclick="navigateTo('booking')" class="btn btn-indigo">Book this apartment <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: BOOKING -->
+        <section id="page-booking" class="page-section">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
+
+                <header class="grid lg:grid-cols-12 gap-6 lg:gap-16 items-end mb-12 sm:mb-16">
+                    <div class="lg:col-span-7">
+                        <h2 class="font-display font-bold text-4xl sm:text-6xl leading-[1.02]">Book Your Stay</h2>
+                    </div>
+                    <p class="lg:col-span-5 text-muted text-lg leading-relaxed">Pick your dates and send a request. The host will confirm within 24 hours.</p>
+                </header>
+
+                <div class="grid lg:grid-cols-12 gap-6">
+                    <form id="booking-form" class="card p-6 sm:p-10 lg:col-span-7" style="box-shadow: var(--shadow-md)" novalidate>
+                        <div class="grid sm:grid-cols-2 gap-5 mb-5">
+                            <div class="field">
+                                <label for="b-in">Check-in</label>
+                                <input type="date" id="b-in" required>
+                            </div>
+                            <div class="field">
+                                <label for="b-out">Check-out</label>
+                                <input type="date" id="b-out" required>
+                            </div>
+                        </div>
+                        <div class="field mb-5">
+                            <label for="b-guests">Guests</label>
+                            <select id="b-guests">
+                                <option value="1">1 guest</option>
+                                <option value="2" selected>2 guests</option>
+                                <option value="3">3 guests</option>
+                                <option value="4">4 guests</option>
+                            </select>
+                        </div>
+                        <div class="rule my-8"></div>
+                        <div class="grid sm:grid-cols-2 gap-5 mb-5">
+                            <div class="field">
+                                <label for="b-name">Full name</label>
+                                <input type="text" id="b-name" autocomplete="name" required>
+                            </div>
+                            <div class="field">
+                                <label for="b-email">Email</label>
+                                <input type="email" id="b-email" autocomplete="email" required>
+                            </div>
+                        </div>
+                        <div class="field mb-8">
+                            <label for="b-note">Message (optional)</label>
+                            <textarea id="b-note" placeholder="Arrival time, special requests…"></textarea>
+                        </div>
+
+                        <div id="form-status" role="status" aria-live="polite" class="mb-6 hidden px-5 py-4 rounded-2xl font-medium flex items-center gap-3"></div>
+
+                        <button type="submit" class="btn btn-indigo w-full sm:w-auto">Send booking request <i class="fas fa-paper-plane text-sm" aria-hidden="true"></i></button>
+                    </form>
+
+                    <aside class="lg:col-span-5">
+                        <div class="on-dark rounded-[24px] bg-night text-white p-8 sm:p-10 lg:sticky lg:top-24" style="box-shadow: var(--shadow-lg)">
+                            <h3 class="font-display font-semibold text-2xl mb-1">Your price</h3>
+                            <p class="text-sm text-white/60 mb-8">Updates as you choose your dates.</p>
+
+                            <dl class="space-y-4 text-white/85">
+                                <div class="flex justify-between gap-4"><dt id="sum-nights-label">€85 × 0 nights</dt><dd id="sum-nights" class="tabular font-semibold">€0</dd></div>
+                                <div class="flex justify-between gap-4"><dt>Cleaning fee</dt><dd id="sum-clean" class="tabular font-semibold">€0</dd></div>
+                            </dl>
+                            <div class="h-px bg-white/15 my-6"></div>
+                            <div class="flex justify-between items-end">
+                                <span class="text-white/70">Total</span>
+                                <span id="sum-total" class="font-display font-bold text-4xl tabular text-mint-300">€0</span>
+                            </div>
+                            <p class="text-xs text-white/50 mt-6 leading-relaxed">Tourist tax is not included and is paid on arrival. Minimum stay: 2 nights. Free cancellation up to 7 days before check-in.</p>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: LOCATION -->
+        <section id="page-location" class="page-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
+
+                <header class="grid lg:grid-cols-12 gap-6 lg:gap-16 items-end mb-12 sm:mb-16">
+                    <div class="lg:col-span-7">
+                        <h2 class="font-display font-bold text-4xl sm:text-6xl leading-[1.02]">Location</h2>
+                    </div>
+                    <p class="lg:col-span-5 text-muted text-lg leading-relaxed">Quiet street, yet only minutes from the station, shops and restaurants.</p>
+                </header>
+
+                <div class="grid lg:grid-cols-12 gap-6">
+                    <div class="card p-8 sm:p-10 lg:col-span-7 flex flex-col justify-between gap-8" style="box-shadow: var(--shadow-md)">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-mint-50 text-mint-700 grid place-items-center text-lg mb-8"><i class="fas fa-location-dot" aria-hidden="true"></i></div>
+                            <h3 class="font-display font-semibold text-2xl mb-3">Find us on Google Maps</h3>
+                            <p class="text-muted leading-relaxed mb-2">[EDIT: Street name and number], 6210 Sežana, Slovenia</p>
+                            <p class="text-muted leading-relaxed">Open the map for directions, street view and nearby places.</p>
+                        </div>
+                        <!-- EDIT: replace the link below with the exact Google Maps link of your apartment -->
+                        <a href="https://www.google.com/maps/search/?api=1&query=Se%C5%BEana%2C+Slovenia" target="_blank" rel="noopener noreferrer" class="btn btn-indigo self-start">
+                            Open in Google Maps
+                            <i class="fas fa-arrow-up-right-from-square text-sm" aria-hidden="true"></i>
+                            <span class="sr-only">(opens in a new tab)</span>
+                        </a>
+                    </div>
+
+                    <div class="card p-8 sm:p-10 lg:col-span-5">
+                        <h3 class="font-display font-semibold text-2xl mb-6">Nearby</h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-start gap-4"><i class="fas fa-train text-indigo-500 mt-1 w-5" aria-hidden="true"></i><span><span class="font-semibold">Train station</span><span class="block text-sm text-muted">8 min walk</span></span></li>
+                            <li class="flex items-start gap-4"><i class="fas fa-tree text-indigo-500 mt-1 w-5" aria-hidden="true"></i><span><span class="font-semibold">Botanical garden</span><span class="block text-sm text-muted">10 min walk</span></span></li>
+                            <li class="flex items-start gap-4"><i class="fas fa-cart-shopping text-indigo-500 mt-1 w-5" aria-hidden="true"></i><span><span class="font-semibold">Supermarket</span><span class="block text-sm text-muted">3 min walk</span></span></li>
+                            <li class="flex items-start gap-4"><i class="fas fa-utensils text-indigo-500 mt-1 w-5" aria-hidden="true"></i><span><span class="font-semibold">Restaurants and cafés</span><span class="block text-sm text-muted">5 min walk</span></span></li>
+                            <li class="flex items-start gap-4"><i class="fas fa-plane text-indigo-500 mt-1 w-5" aria-hidden="true"></i><span><span class="font-semibold">Trieste airport</span><span class="block text-sm text-muted">About 35 min by car</span></span></li>
+                        </ul>
+                        <p class="text-xs text-muted mt-6">[EDIT: Check and adjust these distances.]</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: HOST -->
+        <section id="page-host" class="page-section">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
+
+                <header class="grid lg:grid-cols-12 gap-6 lg:gap-16 items-end mb-12 sm:mb-16">
+                    <div class="lg:col-span-7">
+                        <h2 class="font-display font-bold text-4xl sm:text-6xl leading-[1.02]">Meet Your Host</h2>
+                    </div>
+                    <p class="lg:col-span-5 text-muted text-lg leading-relaxed">The person who will welcome you and make sure everything is just right.</p>
+                </header>
+
+                <article class="card p-6 sm:p-10 grid lg:grid-cols-12 gap-8 lg:gap-12 items-start" style="box-shadow: var(--shadow-md)">
+                    <div class="lg:col-span-4">
+                        <div class="shot" style="aspect-ratio: 4 / 5;">
+                            <img src="host.jpg" alt="Portrait of your host" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/600x750/1F1A0E/ffffff?text=Host'">
+                        </div>
+                    </div>
+                    <div class="lg:col-span-8">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 rounded-2xl bg-indigo-500 text-white font-display font-bold text-xl grid place-items-center shrink-0">NN</div>
+                            <div>
+                                <h3 class="font-display font-semibold text-2xl leading-tight">[EDIT: Host name]</h3>
+                                <p class="text-indigo-500 font-medium text-sm">Host since [EDIT: year] · Speaks Slovenian, English, Italian</p>
+                            </div>
+                        </div>
+                        <p class="text-muted leading-relaxed mb-5">[EDIT: Write a short, friendly description of yourself. Who are you, where are you from, why did you start hosting, and what do you love about Sežana and the Karst?]</p>
+                        <p class="text-muted leading-relaxed mb-8">[EDIT: Add what guests can expect from you, for example local tips, help with check-in or recommendations for wine tasting and hiking.]</p>
+
+                        <div class="rule mb-8"></div>
+                        <div class="grid sm:grid-cols-3 gap-6 mb-8">
+                            <div><p class="font-display font-bold text-3xl">4.9</p><p class="text-sm text-muted">Average rating</p></div>
+                            <div><p class="font-display font-bold text-3xl">120+</p><p class="text-sm text-muted">Guests hosted</p></div>
+                            <div><p class="font-display font-bold text-3xl">&lt; 1 h</p><p class="text-sm text-muted">Reply time</p></div>
+                        </div>
+                        <p class="text-xs text-muted mb-8">[EDIT: Replace these example numbers with your real ones.]</p>
+
+                        <div class="flex flex-wrap gap-3">
+                            <a href="mailto:host@example.com" class="btn btn-indigo"><i class="fas fa-envelope" aria-hidden="true"></i>Email the host</a>
+                            <a href="tel:+38640000000" class="btn btn-ghost"><i class="fas fa-phone" aria-hidden="true"></i>Call</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="on-dark fixed inset-0 z-[80] bg-night-900/95 items-center justify-center p-4 sm:p-10" role="dialog" aria-modal="true" aria-label="Photo viewer" onclick="if(event.target===this) closeLightbox()">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white grid place-items-center" aria-label="Close photo viewer"><i class="fas fa-xmark text-xl" aria-hidden="true"></i></button>
+        <button onclick="stepLightbox(-1)" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white grid place-items-center" aria-label="Previous photo"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+        <button onclick="stepLightbox(1)" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white grid place-items-center" aria-label="Next photo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+        <figure class="max-w-5xl w-full text-center">
+            <img id="lightbox-img" src="" alt="" class="mx-auto max-h-[75vh] w-auto rounded-xl object-contain">
+            <figcaption class="mt-4 text-white">
+                <span id="lightbox-title" class="font-display font-semibold text-lg"></span>
+                <span id="lightbox-count" class="block text-sm text-white/55 tabular mt-1"></span>
+            </figcaption>
+        </figure>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="on-dark bg-night text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                <button type="button" onclick="navigateTo('welcome')" class="flex items-center gap-3 self-start md:self-auto" aria-label="Karst Nest, back to Welcome page">
+                    <span class="w-10 h-10 rounded-[12px] bg-mint-300 text-night grid place-items-center shrink-0"><i class="fas fa-house-chimney" aria-hidden="true"></i></span>
+                    <span class="font-display font-bold text-lg">Karst Nest</span>
+                </button>
+                <nav aria-label="Footer">
+                    <ul class="flex flex-wrap gap-2">
+                        <li><button type="button" onclick="navigateTo('welcome')" id="foot-welcome" class="foot-btn" aria-current="page">Welcome</button></li>
+                        <li><button type="button" onclick="navigateTo('apartment')" id="foot-apartment" class="foot-btn">The Apartment</button></li>
+                        <li><button type="button" onclick="navigateTo('booking')" id="foot-booking" class="foot-btn">Book Now</button></li>
+                        <li><button type="button" onclick="navigateTo('location')" id="foot-location" class="foot-btn">Location</button></li>
+                        <li><button type="button" onclick="navigateTo('host')" id="foot-host" class="foot-btn">Your Host</button></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-white/50">
+                <p>Karst Nest Apartment · Sežana, Slovenia</p>
+                <button type="button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="self-start sm:self-auto hover:text-mint-300 transition-colors">Back to top <i class="fas fa-arrow-up text-xs ml-1" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ============ Settings (edit these) ============ */
+        const PRICE_PER_NIGHT = 85;   // EUR
+        const CLEANING_FEE = 30;      // EUR
+        const MIN_NIGHTS = 2;
+        const HOST_EMAIL = 'host@example.com';
+
+        /* ============ Navigation ============ */
+        const PAGES = ['welcome', 'apartment', 'booking', 'location', 'host'];
+
+        function navigateTo(pageId, opts = {}) {
+            if (!PAGES.includes(pageId)) pageId = 'welcome';
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.nav-btn, .foot-btn').forEach(btn => btn.removeAttribute('aria-current'));
+            [`nav-${pageId}`, `foot-${pageId}`].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute('aria-current', 'page');
+            });
+
+            if (!opts.fromHash && location.hash !== '#' + pageId) history.pushState(null, '', '#' + pageId);
+            window.scrollTo({ top: 0, behavior: opts.instant ? 'auto' : 'smooth' });
+        }
+
+        window.addEventListener('popstate', () => navigateTo(location.hash.slice(1) || 'welcome', { fromHash: true }));
+        document.addEventListener('DOMContentLoaded', () => {
+            const initial = location.hash.slice(1);
+            if (PAGES.includes(initial)) navigateTo(initial, { fromHash: true, instant: true });
+            initBooking();
+        });
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            const open = menu.classList.toggle('hidden') === false;
+            btn.setAttribute('aria-expanded', String(open));
+            btn.querySelector('i').className = open ? 'fas fa-xmark text-lg' : 'fas fa-bars text-lg';
+        }
+
+        /* ============ Lightbox ============ */
+        let lightboxIndex = 0;
+        let lightboxReturnFocus = null;
+        function galleryItems() { return [...document.querySelectorAll('#gallery-grid .gallery-item')]; }
+        function renderLightbox() {
+            const items = galleryItems();
+            const item = items[lightboxIndex];
+            const img = item.querySelector('img');
+            document.getElementById('lightbox-img').src = img.src;
+            document.getElementById('lightbox-img').alt = img.alt;
+            document.getElementById('lightbox-title').textContent = item.querySelector('h3').textContent;
+            document.getElementById('lightbox-count').textContent = `${lightboxIndex + 1} / ${items.length}`;
+        }
+        function openLightbox(i) {
+            lightboxReturnFocus = document.activeElement;
+            lightboxIndex = i;
+            renderLightbox();
+            document.getElementById('lightbox').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.querySelector('#lightbox button').focus();
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('open');
+            document.body.style.overflow = '';
+            if (lightboxReturnFocus) lightboxReturnFocus.focus();
+        }
+        function stepLightbox(d) {
+            const n = galleryItems().length;
+            lightboxIndex = (lightboxIndex + d + n) % n;
+            renderLightbox();
+        }
+        document.addEventListener('keydown', e => {
+            if (!document.getElementById('lightbox').classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') stepLightbox(1);
+            if (e.key === 'ArrowLeft') stepLightbox(-1);
+        });
+
+        /* ============ Booking ============ */
+        const $ = id => document.getElementById(id);
+        const eur = n => '€' + n.toLocaleString('en-GB');
+        const iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+        function nightsBetween(a, b) {
+            if (!a || !b) return 0;
+            return Math.round((new Date(b) - new Date(a)) / 86400000);
+        }
+
+        function updateSummary() {
+            const n = Math.max(0, nightsBetween($('b-in').value, $('b-out').value));
+            const stay = n * PRICE_PER_NIGHT;
+            const clean = n > 0 ? CLEANING_FEE : 0;
+            $('sum-nights-label').textContent = `${eur(PRICE_PER_NIGHT)} × ${n} night${n === 1 ? '' : 's'}`;
+            $('sum-nights').textContent = eur(stay);
+            $('sum-clean').textContent = eur(clean);
+            $('sum-total').textContent = eur(stay + clean);
+            return n;
+        }
+
+        function showStatus(message, ok) {
+            const box = $('form-status');
+            box.className = `mb-6 px-5 py-4 rounded-2xl font-medium flex items-center gap-3 ${ok ? 'bg-mint-50 text-mint-800' : 'bg-rose-50 text-rose-600'}`;
+            box.innerHTML = `<i class="fas ${ok ? 'fa-circle-check' : 'fa-circle-xmark'}" aria-hidden="true"></i><span></span>`;
+            box.querySelector('span').textContent = message;
+        }
+
+        function initBooking() {
+            const today = new Date();
+            const tomorrow = new Date(today.getTime() + 86400000);
+            $('b-in').min = iso(today);
+            $('b-out').min = iso(tomorrow);
+
+            $('b-in').addEventListener('change', () => {
+                const start = new Date($('b-in').value);
+                if (isNaN(start)) return;
+                const minOut = new Date(start.getTime() + MIN_NIGHTS * 86400000);
+                $('b-out').min = iso(minOut);
+                if ($('b-out').value && new Date($('b-out').value) < minOut) $('b-out').value = '';
+                updateSummary();
+            });
+            $('b-out').addEventListener('change', updateSummary);
+
+            $('booking-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const n = updateSummary();
+                const name = $('b-name').value.trim();
+                const email = $('b-email').value.trim();
+
+                if (!$('b-in').value || !$('b-out').value) return showStatus('Please choose your check-in and check-out dates.', false);
+                if (n < MIN_NIGHTS) return showStatus(`The minimum stay is ${MIN_NIGHTS} nights.`, false);
+                if (!name) return showStatus('Please enter your name.', false);
+                if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showStatus('Please enter a valid email address.', false);
+
+                const total = n * PRICE_PER_NIGHT + CLEANING_FEE;
+                const body = [
+                    `Name: ${name}`, `Email: ${email}`,
+                    `Check-in: ${$('b-in').value}`, `Check-out: ${$('b-out').value}`,
+                    `Nights: ${n}`, `Guests: ${$('b-guests').value}`,
+                    `Estimated total: ${eur(total)}`, '', $('b-note').value.trim()
+                ].join('\n');
+
+                showStatus('Thank you! Your email app will open so you can send the request.', true);
+                // No server is needed: this opens the guest's email app with the request filled in.
+                // To send requests automatically, connect this form to a service such as Formspree.
+                window.location.href = `mailto:${HOST_EMAIL}?subject=${encodeURIComponent('Booking request: ' + $('b-in').value + ' to ' + $('b-out').value)}&body=${encodeURIComponent(body)}`;
+            });
+            updateSummary();
+        }
+    </script>
+</body>
+</html>
